@@ -5,14 +5,14 @@ pipeline {
         stage('Build') {
             steps {
                 echo '🏗️ Etapa de construcción iniciada...'
-                sh 'echo Compilando proyecto...'   // Reemplázalo por tu comando real
+                bat 'echo Compilando proyecto...'   // Reemplázalo por tu comando real
             }
         }
 
         stage('Test') {
             steps {
                 echo '🧪 Ejecutando pruebas...'
-                sh 'echo Corriendo tests simulados...' // Reemplázalo por tus tests
+                bat 'echo Corriendo tests simulados...' // Reemplázalo por tus tests
             }
         }
     }
