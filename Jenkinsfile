@@ -5,6 +5,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo '🏗️ Etapa de construcción iniciada...'
+                // Ejecuta cmd.exe directamente con la ruta completa
                 bat '"C:\\Windows\\System32\\cmd.exe" /c echo Compilando proyecto...'
             }
         }
@@ -29,4 +30,3 @@ pipeline {
         }
     }
 }
-
