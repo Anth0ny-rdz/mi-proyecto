@@ -1,18 +1,18 @@
 pipeline {
-    agent any   // Jenkins puede usar cualquier agente disponible
+    agent any
 
     stages {
         stage('Build') {
             steps {
                 echo '🏗️ Etapa de construcción iniciada...'
-                bat 'echo Compilando proyecto...'   // Reemplázalo por tu comando real
+                bat '"C:\\Windows\\System32\\cmd.exe" /c echo Compilando proyecto...'
             }
         }
 
         stage('Test') {
             steps {
                 echo '🧪 Ejecutando pruebas...'
-                bat 'echo Corriendo tests simulados...' // Reemplázalo por tus tests
+                bat '"C:\\Windows\\System32\\cmd.exe" /c echo Corriendo tests simulados...'
             }
         }
     }
