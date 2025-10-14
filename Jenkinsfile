@@ -4,29 +4,35 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                echo '🏗️ Etapa de construcción iniciada...'
-                // Ejecuta cmd.exe directamente con la ruta completa
-                bat '"C:\\Windows\\System32\\cmd.exe" /c echo Compilando proyecto...'
+                echo "Instalando dependencias..."
+                sh 'python -m venv venv'
+                sh './venv/bin/pip install -r requirements.txt'
             }
         }
 
-        stage('Test') {
+        stage('Test and Lint') {
             steps {
-                echo '🧪 Ejecutando pruebas...'
-                bat '"C:\\Windows\\System32\\cmd.exe" /c echo Corriendo tests simulados...'
+                echo "Ejecutando pruebas y análisis de calidad..."
+                sh './venv/bin/pytest --maxfail=1 --disable-warnings -q'
+                sh './venv/bin/flake8 app --count --select=E9,F63,F7,F82 --show-source --statistics'
+            }
+            post {
+                always {
+                    junit '**/test-results/*.xml'
+                }
+                success {
+                    echo "✅ Todas las pruebas pasaron correctamente."
+                }
+                failure {
+                    echo "❌ Error en pruebas o calidad de código."
+                }
             }
         }
     }
 
     post {
-        success {
-            echo '✅ Todo salió bien.'
-        }
-        failure {
-            echo '❌ El pipeline falló.'
-        }
         always {
-            echo "Pipeline completado. Estado final: ${currentBuild.currentResult}"
+            echo "Pipeline finalizado."
         }
     }
 }
