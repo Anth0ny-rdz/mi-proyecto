@@ -7,7 +7,7 @@ pipeline {
                 echo "Instalando dependencias..."
                 bat '''
                 python -m venv venv
-                call venv\Scripts\activate
+                call venv\\Scripts\\activate
                 pip install -r requirements.txt
                 '''
             }
@@ -15,9 +15,9 @@ pipeline {
 
         stage('Test and Lint') {
             steps {
-                echo "Ejecutando pruebas y análisis de calidad..."
+                echo "Ejecutando pruebas y anÃ¡lisis de calidad..."
                 bat '''
-                call venv\Scripts\activate
+                call venv\\Scripts\\activate
                 pytest --maxfail=1 --disable-warnings -q
                 flake8 app --count --select=E9,F63,F7,F82 --show-source --statistics
                 '''
