@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, request
-from app.validator import validate_data
+from app.validator import validar_con_tiempo, verificar_en_servicio_
 import logging
 
 # Configurar logging para auditoría
