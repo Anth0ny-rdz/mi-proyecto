@@ -79,3 +79,37 @@ def verificar_en_servicio_externo(email: str) -> dict:
             return {"error": "No se pudo verificar con servicio externo."}
     except requests.RequestException as e:
         return {"error": f"Error de conexión: {e}"}
+
+
+# ------------------------------------------------------------
+# NUEVA FUNCIÓN AÑADIDA: validar_cedula()
+# ------------------------------------------------------------
+def validar_cedula(cedula: str) -> dict:
+    """
+    Valida una cédula ecuatoriana según el algoritmo oficial.
+    Retorna un diccionario con el resultado de la validación.
+    """
+    resultado = {"valida": False, "tipo": "desconocido"}
+
+    if not cedula.isdigit() or len(cedula) != 10:
+        return resultado
+
+    provincia = int(cedula[:2])
+    if provincia < 1 or provincia > 24:
+        return resultado
+
+    tercer_digito = int(cedula[2])
+    if tercer_digito < 0 or tercer_digito > 5:
+        return resultado
+
+    coeficientes = [2, 1, 2, 1, 2, 1, 2, 1, 2]
+    suma = 0
+    for i in range(9):
+        valor = int(cedula[i]) * coeficientes[i]
+        suma += valor - 9 if valor >= 10 else valor
+
+    verificador = int(cedula[9])
+    resultado["valida"] = (10 - (suma % 10)) % 10 == verificador
+    resultado["tipo"] = "natural"
+
+    return resultado
