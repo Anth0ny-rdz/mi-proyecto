@@ -17,7 +17,7 @@ pipeline {
 
         stage('Build') {
             steps {
-                echo " Instalando dependencias..."
+                echo " Creando entorno virtual e instalando dependencias..."
                 bat '''
                 python -m venv venv
                 call venv\\Scripts\\activate
@@ -28,34 +28,28 @@ pipeline {
 
         stage('Run Tests and Coverage') {
             steps {
-                echo "🧪 Ejecutando pruebas y cobertura..."
+                echo " Ejecutando pruebas y cobertura..."
                 bat '''
                 call venv\\Scripts\\activate
-                pytest --maxfail=1 --disable-warnings --cov=app --cov-report=xml --html=report.html --self-contained-html
+                pytest --maxfail=1 --disable-warnings --cov=app --cov-report=xml --html=pytest_report.html --self-contained-html
                 '''
-            }
-            post {
-                always {
-                    junit 'tests/**/*.xml'
-                    echo " Tests ejecutados con cobertura."
-                }
             }
         }
 
         stage('Code Quality') {
             steps {
-                echo " Ejecutando análisis de calidad..."
+                echo " Analizando calidad del código..."
                 bat '''
                 call venv\\Scripts\\activate
                 flake8 app --format=html --htmldir=flake-report
-                pylint app
+                pylint app > pylint-report.txt
                 '''
             }
         }
 
         stage('Security Scan') {
             steps {
-                echo " Ejecutando análisis de seguridad..."
+                echo " Escaneando seguridad..."
                 bat '''
                 call venv\\Scripts\\activate
                 bandit -r app -f txt -o bandit-report.txt
@@ -66,17 +60,17 @@ pipeline {
         stage('Archive Reports') {
             steps {
                 echo " Guardando reportes..."
-                archiveArtifacts artifacts: '**/*.html, **/*.xml, **/*.txt', fingerprint: true
+                archiveArtifacts artifacts: '**/*.html, **/*.xml, **/*.txt, logs/*.log', fingerprint: true
             }
         }
     }
 
     post {
         success {
-            echo "✅ Pipeline completado con éxito."
+            echo "✅ Pipeline completado exitosamente."
         }
         failure {
-            echo "❌ Falló alguna etapa."
+            echo "❌ Falló alguna etapa. Revisar logs."
         }
         always {
             echo "🏁 Fin del pipeline."
