@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, request
-from app.validator import validar_con_tiempo, verificar_en_servicio_
+from app.validator import validar_con_tiempo, verificar_en_servicio_externo
 import logging
 
 # Configurar logging para auditoría
@@ -19,9 +19,14 @@ def validate_endpoint():
         if not isinstance(data, dict):
             return jsonify({"error": "Formato inválido, debe ser un objeto JSON"}), 400
 
-        result = validate_data(data)
+        result = validar_con_tiempo(data)
+
+        if result.get("valido"):
+            externo = verificar_en_servicio_externo(data.get("email"))
+            result.update(externo)
+
         logging.info("Validación completada correctamente.")
-        return jsonify({"valid": result}), 200
+        return jsonify(result), 200
 
     except Exception as e:
         logging.error(f"Error interno: {str(e)}")
