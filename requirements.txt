@@ -1,5 +1,7 @@
 pytest
-flake8
-requests
-flask
 pytest-cov
+flake8
+pylint
+bandit
+flake8-html
+pytest-html
