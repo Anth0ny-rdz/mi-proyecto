@@ -7,6 +7,7 @@ pipeline {
     }
 
     stages {
+
         stage('Check Python') {
             steps {
                 bat 'python --version'
@@ -16,7 +17,7 @@ pipeline {
 
         stage('Build') {
             steps {
-                echo " Creando entorno virtual e instalando dependencias..."
+                echo " Instalando dependencias..."
                 bat '''
                 python -m venv venv
                 call venv\\Scripts\\activate
@@ -25,52 +26,60 @@ pipeline {
             }
         }
 
-        stage('Test with Coverage') {
+        stage('Run Tests and Coverage') {
             steps {
-                echo " Ejecutando pruebas con cobertura..."
+                echo "🧪 Ejecutando pruebas y cobertura..."
                 bat '''
                 call venv\\Scripts\\activate
-                pytest --cov=app --cov-report=xml --disable-warnings -q
+                pytest --maxfail=1 --disable-warnings --cov=app --cov-report=xml --html=report.html --self-contained-html
                 '''
             }
             post {
                 always {
                     junit 'tests/**/*.xml'
-                    echo " Tests ejecutados"
+                    echo " Tests ejecutados con cobertura."
                 }
             }
         }
 
         stage('Code Quality') {
             steps {
-                echo " Analizando código con flake8..."
+                echo " Ejecutando análisis de calidad..."
                 bat '''
                 call venv\\Scripts\\activate
-                flake8 app --statistics --count --show-source
+                flake8 app --format=html --htmldir=flake-report
+                pylint app
                 '''
             }
         }
 
-        stage('Deploy Simulation') {
+        stage('Security Scan') {
             steps {
-                echo " Simulando despliegue (build Flask app)..."
+                echo " Ejecutando análisis de seguridad..."
                 bat '''
                 call venv\\Scripts\\activate
-                python app/api.py
+                bandit -r app -f txt -o bandit-report.txt
                 '''
+            }
+        }
+
+        stage('Archive Reports') {
+            steps {
+                echo " Guardando reportes..."
+                archiveArtifacts artifacts: '**/*.html, **/*.xml, **/*.txt', fingerprint: true
             }
         }
     }
 
     post {
         success {
-            echo " Pipeline completado con éxito."
+            echo "✅ Pipeline completado con éxito."
         }
         failure {
-            echo " Falló alguna etapa. Revisar logs."
+            echo "❌ Falló alguna etapa."
         }
         always {
-            echo " Fin del pipeline."
+            echo "🏁 Fin del pipeline."
         }
     }
 }
