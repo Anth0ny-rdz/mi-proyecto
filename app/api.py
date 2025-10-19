@@ -1,49 +1,59 @@
-from flask import Flask, jsonify, request
-from app.validator import validar_con_tiempo, verificar_en_servicio_externo
-import logging
-
-# Configurar logging para auditoría
-logging.basicConfig(
-    filename='app.log',
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
+from flask import Flask, request, jsonify
+from validator import (
+    validar_cedula,
+    validar_datos,
+    validar_con_tiempo,
+    verificar_en_servicio_externo
 )
 
 app = Flask(__name__)
 
-@app.route('/validate', methods=['POST'])
-def validate_endpoint():
-    """Endpoint para validar datos enviados en formato JSON."""
-    try:
-        data = request.get_json(force=True)
-        if not isinstance(data, dict):
-            return jsonify({"error": "Formato inválido, debe ser un objeto JSON"}), 400
-
-        result = validar_con_tiempo(data)
-
-        if result.get("valido"):
-            externo = verificar_en_servicio_externo(data.get("email"))
-            result.update(externo)
-
-        logging.info("Validación completada correctamente.")
-        return jsonify(result), 200
-
-    except Exception as e:
-        logging.error(f"Error interno: {str(e)}")
-        return jsonify({"error": "Error interno del servidor"}), 500
+@app.route("/")
+def home():
+    """Ruta de prueba para verificar si la API está viva."""
+    return jsonify({"mensaje": "API de validación activa"}), 200
 
 
-@app.route('/health', methods=['GET'])
-def health_check():
-    """Verifica si el servicio está activo."""
-    return jsonify({"status": "ok"}), 200
+@app.route("/validar", methods=["POST"])
+def validar_cedula_endpoint():
+    """
+    Endpoint que valida una cédula ecuatoriana.
+    Ejemplo de entrada JSON:
+        { "cedula": "1710034065" }
+    """
+    data = request.get_json()
+    if not data or "cedula" not in data:
+        return jsonify({"error": "Debe incluir el campo 'cedula'"}), 400
+
+    resultado = validar_cedula(data["cedula"])
+    return jsonify(resultado), 200
 
 
-@app.route('/status', methods=['GET'])
-def status():
-    """Devuelve el estado del sistema para pruebas de Jenkins."""
-    return jsonify({"status": "ok"}), 200
+@app.route("/validar_datos", methods=["POST"])
+def validar_datos_endpoint():
+    """
+    Endpoint que valida un conjunto de datos personales.
+    Ejemplo:
+        { "name": "Anthony", "email": "anthony@example.com", "age": 23 }
+    """
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "Debe enviar un cuerpo JSON válido"}), 400
+
+    resultado = validar_con_tiempo(data)
+    return jsonify(resultado), 200
 
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=False)
+@app.route("/verificar_externo", methods=["GET"])
+def verificar_externo_endpoint():
+    """
+    Endpoint que simula una verificación externa usando requests.
+    Ejemplo: /verificar_externo?email=anthony@example.com
+    """
+    email = request.args.get("email", "demo@correo.com")
+    resultado = verificar_en_servicio_externo(email)
+    return jsonify(resultado), 200
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
