@@ -70,7 +70,7 @@ pipeline {
     post {
         success {
             echo "Pipeline completado exitosamente."
-            mail to: 'tu_correo@gmail.com',
+            mail to: 'anthor1999@gmail.com',
                  subject: 'Pipeline exitoso - ${env.JOB_NAME} #${env.BUILD_NUMBER}',
                  body: """Hola,
                  
@@ -85,7 +85,7 @@ Jenkins CI/CD
 
         failure {
             echo "Falló alguna etapa. Revisar logs."
-            mail to: 'tu_correo@gmail.com',
+            mail to: 'anthor1999@gmail.com',
                  subject: 'Error en pipeline - ${env.JOB_NAME} #${env.BUILD_NUMBER}',
                  body: """Hola,
 
