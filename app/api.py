@@ -1,10 +1,11 @@
 from flask import Flask, request, jsonify
-from validator import (
+from app.validator import (
     validar_cedula,
     validar_datos,
     validar_con_tiempo,
     verificar_en_servicio_externo
 )
+
 
 app = Flask(__name__)
 
