@@ -13,6 +13,10 @@ app = Flask(__name__)
 def home():
     """Ruta de prueba para verificar si la API está viva."""
     return jsonify({"mensaje": "API de validación activa"}), 200
+@app.route("/status")
+def status():
+    """Devuelve el estado de la API (para pruebas de Jenkins)."""
+    return jsonify({"status": "ok", "message": "API funcionando correctamente"}), 200
 
 
 @app.route("/validar", methods=["POST"])
