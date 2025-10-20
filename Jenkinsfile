@@ -2,7 +2,6 @@ pipeline {
     agent any
 
     environment {
-        // Ruta al Python que Jenkins usará (ajústala si usas otra versión)
         PYTHON_HOME = 'C:\\Users\\Didier\\AppData\\Local\\Programs\\Python\\Python312'
         PATH = "${env.PYTHON_HOME};${env.PYTHON_HOME}\\Scripts;${env.PATH}"
     }
@@ -11,7 +10,7 @@ pipeline {
 
         stage('Check Python') {
             steps {
-                echo "🔍 Verificando instalación de Python..."
+                echo " Verificando instalación de Python..."
                 bat 'python --version'
                 bat 'pip --version'
             }
@@ -19,7 +18,7 @@ pipeline {
 
         stage('Build') {
             steps {
-                echo "🏗️ Creando entorno virtual e instalando dependencias..."
+                echo " Creando entorno virtual e instalando dependencias..."
                 bat '''
                 python -m venv venv
                 call venv\\Scripts\\activate
@@ -41,11 +40,11 @@ pipeline {
 
         stage('Code Quality') {
             steps {
-                echo "🔎 Analizando calidad del código..."
+                echo " Analizando calidad del código..."
                 bat '''
                 call venv\\Scripts\\activate
-                flake8 app --format=html --htmldir=flake-report || echo "⚠️ Flake8 encontró advertencias."
-                python -m pylint app > pylint-report.txt || echo "⚠️ Pylint encontró advertencias."
+                flake8 app --format=html --htmldir=flake-report || exit /b 0
+                python -m pylint app > pylint-report.txt || exit /b 0
                 '''
             }
         }
@@ -55,14 +54,14 @@ pipeline {
                 echo "🛡️ Escaneando seguridad..."
                 bat '''
                 call venv\\Scripts\\activate
-                bandit -r app -f txt -o bandit-report.txt || echo "⚠️ Bandit falló o encontró vulnerabilidades, pero no se detiene el pipeline."
+                bandit -r app -f txt -o bandit-report.txt || exit /b 0
                 '''
             }
         }
 
         stage('Archive Reports') {
             steps {
-                echo "📦 Guardando reportes..."
+                echo " Guardando reportes..."
                 archiveArtifacts artifacts: '**/*.html, **/*.xml, **/*.txt, logs/*.log', fingerprint: true
             }
         }
