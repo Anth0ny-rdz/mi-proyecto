@@ -1,18 +1,24 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: mi-proyecto-app
+  name: mi-proyecto
   namespace: argocd
+  annotations:
+    # Para notificaciones (opcional)
+    notifications.argoproj.io/subscribe.on-sync-succeeded.slack: devops-channel
 spec:
   project: default
   source:
     repoURL: https://github.com/Anth0ny-rdz/mi-proyecto
     targetRevision: HEAD
-    path: k8s
+    path: k8s/manifests  # Cambia la ruta aquí
   destination:
     server: https://kubernetes.default.svc
-    namespace: mi-proyecto
+    namespace: mi-proyecto  # Asegúrate que coincida con tu namespace.yaml
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
+      allowEmpty: false
+    syncOptions:
+    - CreateNamespace=true
