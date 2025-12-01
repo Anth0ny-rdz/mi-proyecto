@@ -1,10 +1,11 @@
+# k8s/manifests/deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mi-aplicacion
   namespace: mi-proyecto
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: mi-aplicacion
@@ -14,10 +15,10 @@ spec:
         app: mi-aplicacion
     spec:
       containers:
-      - name: mi-app  # Cambiar de "nginx" a "mi-app"
-        image: python:3.9-alpine  # Cambiar nginx por Python
+      - name: mi-app
+        image: mi-app-launchdarkly:latest  # TU IMAGEN
         ports:
-        - containerPort: 5000  # Cambiar puerto 80 por 5000
+        - containerPort: 5000
         env:
         - name: LAUNCHDARKLY_SDK_KEY
           valueFrom:
@@ -26,5 +27,3 @@ spec:
               key: sdk-key
         - name: LAUNCHDARKLY_ENV
           value: "production"
-        command: ["python"]
-        args: ["-m", "http.server", "5000"]  # Servidor simple para probar
