@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from app.validator import (
+from validator import (
     validar_cedula,
     validar_datos,
     validar_con_tiempo,
@@ -27,13 +27,9 @@ def get_feature_flag(user_key, feature_flag_key, default=False):
     Obtiene el estado de un feature flag desde LaunchDarkly
     """
     if client:
-        user = {
-            "key": user_key,
-            "custom": {
-                "groups": "users"
-            }
-        }
-        return client.variation(feature_flag_key, user, default)
+        from ldclient import Context
+        context = Context.builder(user_key).kind("user").build()
+        return client.variation(feature_flag_key, context, default)
     return default
 # ========== FIN LAUNCHDARKLY ==========
 
