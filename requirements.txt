@@ -1,3 +1,4 @@
+launchdarkly-server-sdk
 flask
 pytest
 pytest-cov

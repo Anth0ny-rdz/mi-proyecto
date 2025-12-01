@@ -1,4 +1,3 @@
-# k8s/manifests/deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -16,7 +15,7 @@ spec:
     spec:
       containers:
       - name: mi-app
-        image: mi-app-launchdarkly:latest  # TU IMAGEN
+        image: mi-app:latest  # CAMBIAR POR TU IMAGEN
         ports:
         - containerPort: 5000
         env:
