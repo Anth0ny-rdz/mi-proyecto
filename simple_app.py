@@ -1,0 +1,39 @@
+﻿import os
+import ldclient
+from ldclient.config import Config
+from ldclient import Context
+from flask import Flask, jsonify
+
+app = Flask(__name__)
+
+sdk_key = os.environ.get('LAUNCHDARKLY_SDK_KEY', '')
+if sdk_key:
+    ldclient.set_config(Config(sdk_key))
+    client = ldclient.get()
+    print('✅ LaunchDarkly inicializado')
+else:
+    client = None
+    print('⚠️ LaunchDarkly no configurado')
+
+def get_feature_flag(user_key, feature_flag_key, default=False):
+    if client:
+        context = Context.builder(user_key).kind('user').build()
+        return client.variation(feature_flag_key, context, default)
+    return default
+
+@app.route('/')
+def home():
+    return jsonify({'mensaje': 'API con LaunchDarkly funcionando!'})
+
+@app.route('/feature-flags')
+def feature_flags():
+    flags = {
+        'feature_flags': {
+            'nuevo-mensaje-bienvenida': get_feature_flag('test', 'nuevo-mensaje-bienvenida', False),
+            'status-detallado': get_feature_flag('test', 'status-detallado', False)
+        }
+    }
+    return jsonify(flags)
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
