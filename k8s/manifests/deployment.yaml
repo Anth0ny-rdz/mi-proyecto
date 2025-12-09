@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: mi-app
-        image: mi-app:latest  # CAMBIAR POR TU IMAGEN
+        image: nginx:alpine  # CAMBIAR POR TU IMAGEN
         ports:
         - containerPort: 5000
         env:
