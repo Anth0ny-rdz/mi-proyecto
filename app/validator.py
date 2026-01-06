@@ -10,6 +10,8 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
 
+#rt
+
 def validar_datos(data: dict) -> dict:
     """
     Valida un diccionario de datos verificando que cumpla las reglas.
