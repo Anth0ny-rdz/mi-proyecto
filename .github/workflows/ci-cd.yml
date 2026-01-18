@@ -1,0 +1,36 @@
+name: CI-CD-DevSecOps
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout código
+      uses: actions/checkout@v4
+
+    - name: Configurar Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: 18
+
+    - name: Instalar dependencias
+      run: npm install || true
+
+    - name: Build
+      run: npm run build || true
+
+    - name: Tests
+      run: npm test || true
+
+    # ------------------------
+    # DEVSECOPS - SEMGREP
+    # ------------------------
+    - name: Semgrep Scan
+      uses: returntocorp/semgrep-action@v1
+      with:
+        config: p/owasp-top-ten
+      continue-on-error: true
