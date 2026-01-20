@@ -109,6 +109,7 @@ def verificar_externo_endpoint():
 # ========== NUEVO ENDPOINT PARA FEATURE FLAGS ==========
 @app.route("/feature-flags", methods=["GET"])
 def get_feature_flags():
+    ###cambios realizados en api
     """
     Endpoint para ver el estado de los feature flags para el usuario actual
     """
